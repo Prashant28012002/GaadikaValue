@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Price & Brand Prediction</title>
+  <style>
+   body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0f172a; /* dark navy */
+  margin: 0;
+  padding: 0;
+  color: #2e3137;
+}
+
+.container {
+  max-width: 500px;
+  margin: 50px auto;
+  background: #111827; /* dark card */
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6),
+              0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #38bdf8; /* cyan highlight */
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+/* Input fields */
+input {
+  background: #020617;
+  color: #282830;
+  border: 1px solid #334155;
+}
+
+input::placeholder {
+  color: #94a3b8;
+}
+
+input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+
+/* Button */
+button {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(34, 197, 94, 0.4);
+}
+
+button:hover {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.6);
+}
+
+/* Result box */
+#result {
+  margin-top: 20px;
+  padding: 15px;
+  background: #022c22;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: #34d399;
+  box-shadow: inset 0 0 10px rgba(52, 211, 153, 0.4);
+}
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Vehicle Price & Brand Prediction</h2>
+  
+  <form id="vehicleForm">
+    <!-- Numeric Inputs -->
+    <input type="number" name="year" placeholder="Year" required>
+    <input type="number" name="mileage" placeholder="Mileage (km)" required>
+    <input type="number" name="cylinders" placeholder="Cylinders" required>
+    <input type="number" name="doors" placeholder="Number of Doors" required>
+
+    <!-- Categorical Inputs -->
+    <input type="text" name="make" placeholder="Make (e.g., Toyota)" required>
+    <input type="text" name="model" placeholder="Model (e.g., Corolla)" required>
+    <input type="text" name="fuel" placeholder="Fuel (Petrol/Diesel)" required>
+    <input type="text" name="transmission" placeholder="Transmission (Automatic/Manual)" required>
+    <input type="text" name="body" placeholder="Body Type (Sedan/SUV/etc.)" required>
+    <input type="text" name="drivetrain" placeholder="Drivetrain (FWD/AWD/4WD)" required>
+    <input type="text" name="exterior_color" placeholder="Exterior Color" required>
+    <input type="text" name="interior_color" placeholder="Interior Color" required>
+    <input type="text" name="trim" placeholder="Trim (e.g., LE/SE/XLE)" required>
+
+    <!-- Submit -->
+    <button type="submit">Predict</button>
+  </form>
+
+  <!-- Result Display -->
+  <div id="result"></div>
+</div>
+
+<script>
+document.getElementById("vehicleForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const data = {
+        year: Number(formData.get("year")),
+        mileage: Number(formData.get("mileage")),
+        cylinders: Number(formData.get("cylinders")),
+        doors: Number(formData.get("doors")),
+        make: formData.get("make"),
+        model: formData.get("model"),
+        fuel: formData.get("fuel"),
+        transmission: formData.get("transmission"),
+        body: formData.get("body"),
+        drivetrain: formData.get("drivetrain"),
+        exterior_color: formData.get("exterior_color"),
+        interior_color: formData.get("interior_color"),
+        trim: formData.get("trim")
+    };
+
+    try {
+        const priceRes = await fetch("/predict_price", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const priceData = await priceRes.json();
+
+        const brandRes = await fetch("/predict_brand", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const brandData = await brandRes.json();
+
+        document.getElementById("result").innerHTML = `
+            💰 Predicted Price: ₹ ${priceData.predicted_price}<br>
+            🚗 Predicted Brand: ${brandData.predicted_brand}
+        `;
+    } catch (err) {
+        document.getElementById("result").innerHTML =
+            "<span style='color:red'>❌ Server error</span>";
+        console.error(err);
+    }
+});
+</script>
+
+</body>
+</html>
