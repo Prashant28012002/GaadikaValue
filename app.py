@@ -1,20 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
-import joblib
 import os
+import joblib
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# -----------------------------------
-# PATHS
-# -----------------------------------
-BASE_DIR = r"D:\Vehicle_project"
 PRICE_MODEL_PATH = os.path.join(BASE_DIR, "price_model.joblib")
 BRAND_MODEL_PATH = os.path.join(BASE_DIR, "brand_model.joblib")
 
-# -----------------------------------
-# LOAD MODELS (once at startup)
-# -----------------------------------
 price_model = joblib.load(PRICE_MODEL_PATH)
 brand_model = joblib.load(BRAND_MODEL_PATH)
 
