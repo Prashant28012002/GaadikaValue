@@ -158,7 +158,7 @@ document.getElementById("vehicleForm").addEventListener("submit", async function
         const brandData = await brandRes.json();
 
         document.getElementById("result").innerHTML = `
-            💰 Predicted Price: ₹ ${priceData.predicted_price}<br>
+            💰 Predicted Price: $ ${priceData.predicted_price}<br>
             🚗 Predicted Brand: ${brandData.predicted_brand}
         `;
     } catch (err) {
